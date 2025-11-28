@@ -28,11 +28,17 @@ const NavBar = () => {
           </div>
 
           {/* Navigation Links */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             {user ? (
               <>
                 {user.role === "jobseeker" && (
                   <>
+                    <button
+                      onClick={() => router.push("/")}
+                      className="text-slate-700 hover:text-slate-900 font-medium transition"
+                    >
+                      Home
+                    </button>
                     <button
                       onClick={() => router.push("/jobs")}
                       className="text-slate-700 hover:text-slate-900 font-medium transition"
@@ -56,6 +62,12 @@ const NavBar = () => {
                 {user.role === "employer" && (
                   <>
                     <button
+                      onClick={() => router.push("/")}
+                      className="text-slate-700 hover:text-slate-900 font-medium transition"
+                    >
+                      Home
+                    </button>
+                    <button
                       onClick={() => router.push("/jobs/my-jobs")}
                       className="text-slate-700 hover:text-slate-900 font-medium transition"
                     >
@@ -66,6 +78,52 @@ const NavBar = () => {
                       className="text-slate-700 hover:text-slate-900 font-medium transition"
                     >
                       Post Job
+                    </button>
+                    <button
+                      onClick={() => router.push("/profile")}
+                      className="text-slate-700 hover:text-slate-900 font-medium transition"
+                    >
+                      Profile
+                    </button>
+                  </>
+                )}
+                {user.role === "admin" && (
+                  <>
+                    <button
+                      onClick={() => router.push("/")}
+                      className="text-slate-700 hover:text-slate-900 font-medium transition"
+                    >
+                      Home
+                    </button>
+                    <button
+                      onClick={() => router.push("/admin")}
+                      className="text-slate-700 hover:text-slate-900 font-medium transition"
+                    >
+                      Admin Dashboard
+                    </button>
+                    <button
+                      onClick={() => router.push("/admin/pending-employers")}
+                      className="text-slate-700 hover:text-slate-900 font-medium transition"
+                    >
+                      Pending Employers
+                    </button>
+                    <button
+                      onClick={() => router.push("/admin/users")}
+                      className="text-slate-700 hover:text-slate-900 font-medium transition"
+                    >
+                      Users
+                    </button>
+                    <button
+                      onClick={() => router.push("/admin/jobs")}
+                      className="text-slate-700 hover:text-slate-900 font-medium transition"
+                    >
+                      All Jobs
+                    </button>
+                    <button
+                      onClick={() => router.push("/admin/applications")}
+                      className="text-slate-700 hover:text-slate-900 font-medium transition"
+                    >
+                      Applications
                     </button>
                     <button
                       onClick={() => router.push("/profile")}
