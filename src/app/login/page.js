@@ -2,10 +2,11 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import apiClient from "@/lib/axios.config";
+import { useAuth } from "@/contexts/AuthContext";
 
 const LoginPage = () => {
   const router = useRouter();
+  const { login } = useAuth();
 
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -24,20 +25,7 @@ const LoginPage = () => {
     setFeedback({ type: "", message: "" });
 
     try {
-      // Backend will set httpOnly cookie here
-      const response = await apiClient.post("/auth/login", credentials);
-
-      // Try to read user from different possible response shapes
-      const user =
-        response?.data?.data?.user ||
-        response?.data?.user ||
-        response?.data?.data ||
-        null;
-
-      // Optional: store user info in localStorage for UI (not for auth)
-      if (typeof window !== "undefined" && user) {
-        localStorage.setItem("job-portal-user", JSON.stringify(user));
-      }
+      await login(credentials);
 
       setFeedback({
         type: "success",
