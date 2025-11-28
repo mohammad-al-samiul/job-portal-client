@@ -2,54 +2,57 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import apiClient from "@/lib/axios.config";
 
 const LoginPage = () => {
   const router = useRouter();
+
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [feedback, setFeedback] = useState({ type: "", message: "" });
 
+  // Handle input changes
   const handleChange = (event) => {
     const { name, value } = event.target;
     setCredentials((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Handle form submit
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
     setFeedback({ type: "", message: "" });
 
     try {
-      const response = await fetch(
-        "https://job-portal-server-alpha-nine.vercel.app/api/auth/login",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(credentials),
-        }
-      );
+      // Backend will set httpOnly cookie here
+      const response = await apiClient.post("/auth/login", credentials);
 
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({}));
-        throw new Error(error?.message || "Invalid email or password.");
-      }
+      // Try to read user from different possible response shapes
+      const user =
+        response?.data?.data?.user ||
+        response?.data?.user ||
+        response?.data?.data ||
+        null;
 
-      const data = await response.json();
-      if (typeof window !== "undefined") {
-        localStorage.setItem("job-portal-token", data?.data?.token ?? "");
-        localStorage.setItem(
-          "job-portal-user",
-          JSON.stringify(data?.data?.user ?? {})
-        );
+      // Optional: store user info in localStorage for UI (not for auth)
+      if (typeof window !== "undefined" && user) {
+        localStorage.setItem("job-portal-user", JSON.stringify(user));
       }
 
       setFeedback({
         type: "success",
         message: "Login successful! Redirecting...",
       });
+
+      // Redirect to home page
       setTimeout(() => router.push("/"), 1200);
     } catch (error) {
-      setFeedback({ type: "error", message: error.message });
+      const message =
+        error?.response?.data?.message ||
+        error?.message ||
+        "Invalid email or password.";
+
+      setFeedback({ type: "error", message });
     } finally {
       setIsSubmitting(false);
     }
@@ -58,7 +61,7 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center px-4">
       <div className="relative max-w-md w-full">
-        <div className="rounded-3xl bg-white p-8 shadow-2xl order-2 md:order-1">
+        <div className="rounded-3xl bg-white p-8 shadow-2xl">
           <div className="mb-8 text-center space-y-2">
             <p className="text-sm font-medium text-blue-500">Welcome back</p>
             <h2 className="text-3xl font-semibold text-slate-900">
@@ -70,6 +73,7 @@ const LoginPage = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Email field */}
             <div className="space-y-2">
               <label
                 htmlFor="email"
@@ -89,6 +93,7 @@ const LoginPage = () => {
               />
             </div>
 
+            {/* Password field */}
             <div className="space-y-2">
               <label
                 htmlFor="password"
@@ -109,6 +114,7 @@ const LoginPage = () => {
               />
             </div>
 
+            {/* Feedback message */}
             {feedback.message && (
               <p
                 className={`rounded-2xl px-4 py-3 text-sm ${
@@ -121,6 +127,7 @@ const LoginPage = () => {
               </p>
             )}
 
+            {/* Submit button */}
             <button
               type="submit"
               disabled={isSubmitting}
@@ -130,6 +137,7 @@ const LoginPage = () => {
             </button>
           </form>
 
+          {/* Redirect to register */}
           <p className="mt-6 text-center text-sm text-slate-500">
             New to the platform?{" "}
             <button
