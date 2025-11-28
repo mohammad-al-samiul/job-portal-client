@@ -11,8 +11,6 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Fetch current user on mount
-  // Token is stored in httpOnly cookie, so we just make the API call
   // Cookies are automatically sent with withCredentials: true
   useEffect(() => {
     const fetchCurrentUser = async () => {
